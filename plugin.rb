@@ -53,7 +53,16 @@ after_initialize do
       raise Discourse::InvalidParameters.new(:user_id) unless eligible_user?(user)
 
       email_token = user.email_tokens.create!(email: user.email, scope: ::EmailToken.scopes[:signup])
-      ::EmailToken.enqueue_signup_email(email_token, to_address: user.email)
+
+      user.custom_fields["activation_reminder"] = true
+      user.save_custom_fields
+
+      ::Jobs.enqueue(
+        :user_email,
+        type: "activation_reminder",
+        user_id: user.id,
+        email_token: email_token.token,
+      )
 
       reminder = ::UnverifiedEmailReminder.find_or_initialize_by(user_id: user.id)
       reminder.sent_count = reminder.sent_count.to_i + 1
@@ -64,7 +73,7 @@ after_initialize do
       reminder.save!
 
       log(
-        "Sent activation reminder user_id=#{user.id} username=#{user.username} automatic=#{automatic}",
+        "Enqueued activation reminder user_id=#{user.id} username=#{user.username} automatic=#{automatic}",
       )
 
       reminder

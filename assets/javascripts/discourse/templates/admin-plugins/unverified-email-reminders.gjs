@@ -14,6 +14,7 @@ export default class AdminPluginsUnverifiedEmailReminders extends Component {
   @tracked users = this.args.model?.users ?? [];
   @tracked settings = this.args.model?.settings ?? {};
   @tracked isSendingBulk = false;
+  @tracked bulkResult = null;
 
   async refreshUsers() {
     const response = await ajax(`${API_ROOT}.json`);
@@ -49,7 +50,8 @@ export default class AdminPluginsUnverifiedEmailReminders extends Component {
     this.isSendingBulk = true;
 
     try {
-      await ajax(`${API_ROOT}/send-bulk`, { type: "POST" });
+      const response = await ajax(`${API_ROOT}/send-bulk`, { type: "POST" });
+      this.bulkResult = response.results;
       await this.refreshUsers();
     } catch (error) {
       popupAjaxError(error);
@@ -77,6 +79,17 @@ export default class AdminPluginsUnverifiedEmailReminders extends Component {
           class="btn-primary"
         />
       </div>
+
+      {{#if this.bulkResult}}
+        <p>
+          Sent:
+          {{this.bulkResult.sent}}
+          Skipped:
+          {{this.bulkResult.skipped}}
+          Failed:
+          {{this.bulkResult.failed}}
+        </p>
+      {{/if}}
 
       {{#if this.users.length}}
         <table class="table">
