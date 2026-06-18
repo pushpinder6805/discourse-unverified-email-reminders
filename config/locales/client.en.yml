@@ -1,0 +1,25 @@
+en:
+  js:
+    admin:
+      plugins:
+        unverified_email_reminders:
+          title: "Unverified Email Reminders"
+          subtitle: "Resend verification emails to users who have not confirmed their account"
+          send_due: "Send Due Reminders"
+          sending: "Sending..."
+          send: "Send Email"
+          sent: "Sent"
+          never: "Never"
+          empty: "No unverified users found."
+          columns:
+            username: "Username"
+            email: "Email"
+            created_at: "Created"
+            sent_count: "Sent Count"
+            last_sent_at: "Last Sent"
+            status: "Status"
+            actions: "Actions"
+          status:
+            ready: "Ready"
+            sent: "Reminder sent"
+            error: "Error"
